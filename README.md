@@ -50,4 +50,12 @@ In order to be sure that you are getting the latest images, you need to periodic
 * Find the Docker images section
 * Click Sync next to your new image tags so PrairieLearn pulls down your fresh builds.
 
+<img width="1044" height="528" alt="image" src="https://github.com/user-attachments/assets/ccf55366-bbfb-45d1-b828-dcf483995386" />
+
+
+
+Or, use the "Sync all images from Dockerhub to PrairieLearn" button:
+
+<img width="419" height="57" alt="image" src="https://github.com/user-attachments/assets/cb44e8ea-8a05-4c80-afe4-31d0158e4ee1" />
+
 

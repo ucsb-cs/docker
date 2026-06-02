@@ -1,12 +1,7 @@
-name: Build and Push Custom PrairieLearn Images
+name: 12 - 12-build-and-push-grader-python-datascience.yml
 
 
 on:
-  push:
-    branches: [ "main" ] # Trigger the script whenever changes are pushed to the main branch
-  schedule:
-    # Runs at 00:00 UTC every Sunday (Midnight UTC)
-    - cron: '0 0 * * 0'
   workflow_dispatch: # Keeps the manual button active just in case
 
 jobs:
@@ -28,16 +23,6 @@ jobs:
           username: ${{ vars.DOCKER_USERID }}
           password: ${{ secrets.DOCKER_PAT }}
 
-      # --- 1. BUILD JUPYTERLAB IMAGE ---
-      - name: Build and Push JupyterLab Image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./images/workspace-jupyterlab-python-datascience
-          platforms: linux/amd64
-          push: true
-          tags: ucsbcs/workspace-jupyterlab-python-datascience:latest
-
-      # --- 2. BUILD GRADER IMAGE ---
       - name: Build and Push Grader Image
         uses: docker/build-push-action@v5
         with:

@@ -11,6 +11,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Read pinned datascience version
+        run: echo "DATASCIENCE_VERSION=$(cat datascience-version.txt)" >> "$GITHUB_ENV"
+
       - name: Set up QEMU (for multi-architecture builds)
         uses: docker/setup-qemu-action@v3
 
@@ -29,4 +32,8 @@ jobs:
           context: ./images/grader-python-datascience
           platforms: linux/amd64,linux/arm64/v8
           push: true
-          tags: ucsbcs/grader-python-datascience:latest
+          build-args: |
+            DATASCIENCE_VERSION=${{ env.DATASCIENCE_VERSION }}
+          tags: |
+            ucsbcs/grader-python-datascience:latest
+            ucsbcs/grader-python-datascience:${{ env.DATASCIENCE_VERSION }}

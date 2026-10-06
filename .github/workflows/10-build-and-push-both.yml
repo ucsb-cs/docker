@@ -1,8 +1,20 @@
 name: 10 - build-and-push-both.yml (Build and Push Both PrairieLearn Docker Images)
 
 on:
+  push:
+    # Rebuild automatically whenever an image definition, the pinned
+    # datascience version, or a workflow changes on main.
+    branches: [main]
+    paths:
+      - 'images/**'
+      - 'datascience-version.txt'
+      - '.github/workflows/**'
   schedule:
-    # Runs at 00:00 UTC every Sunday (Midnight UTC)
+    # Runs at 00:00 UTC every Sunday (Midnight UTC), to pick up changes to
+    # the upstream prairielearn/* base images.
+    # NOTE: GitHub silently disables scheduled workflows in a repo with no
+    # commits for 60 days. If the images on Docker Hub look stale, go to
+    # Actions -> this workflow and click "Enable workflow". See README.md.
     - cron: '0 0 * * 0'
   workflow_dispatch: # Keeps the manual button active just in case
 
@@ -12,6 +24,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Read pinned datascience version
+        run: echo "DATASCIENCE_VERSION=$(cat datascience-version.txt)" >> "$GITHUB_ENV"
 
       - name: Set up QEMU (for multi-architecture builds)
         uses: docker/setup-qemu-action@v3
@@ -32,7 +47,11 @@ jobs:
           context: ./images/workspace-jupyterlab-python-datascience
           platforms: linux/amd64,linux/arm64/v8
           push: true
-          tags: ucsbcs/workspace-jupyterlab-python-datascience:latest
+          build-args: |
+            DATASCIENCE_VERSION=${{ env.DATASCIENCE_VERSION }}
+          tags: |
+            ucsbcs/workspace-jupyterlab-python-datascience:latest
+            ucsbcs/workspace-jupyterlab-python-datascience:${{ env.DATASCIENCE_VERSION }}
 
       # --- 2. BUILD GRADER IMAGE ---
       - name: Build and Push Grader Image
@@ -41,4 +60,8 @@ jobs:
           context: ./images/grader-python-datascience
           platforms: linux/amd64,linux/arm64/v8
           push: true
-          tags: ucsbcs/grader-python-datascience:latest
+          build-args: |
+            DATASCIENCE_VERSION=${{ env.DATASCIENCE_VERSION }}
+          tags: |
+            ucsbcs/grader-python-datascience:latest
+            ucsbcs/grader-python-datascience:${{ env.DATASCIENCE_VERSION }}
